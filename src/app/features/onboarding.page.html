@@ -1,0 +1,15 @@
+<ion-content [fullscreen]="true" class="onboarding">
+  <main class="onboarding-wrap">
+    <section class="welcome">
+      <img class="hero-mark" src="assets/icon/zovidoo-icon.svg" alt="" />
+      <p class="brand-name">Zovidoo</p>
+      <p class="brand-subtitle">{{ i18n.t('earTraining') }}</p>
+      <h1>{{ i18n.t('trainTitle') }}</h1>
+      <p class="intro">{{ i18n.t('trainBody') }}</p>
+      <label class="name-field"><span>{{ i18n.t('nameTitle') }}</span><ion-input [attr.aria-label]="i18n.t('nameTitle')" [value]="name" [placeholder]="i18n.t('namePlaceholder')" enterkeyhint="done" (ionInput)="setName($event)"></ion-input></label>
+      <button class="primary" [disabled]="!name.trim() || loading" (click)="begin()">{{ loading ? i18n.t('starting') : i18n.t('start') }} <span>→</span></button>
+      <div class="language-choice"><small>{{ i18n.t('languageHint') }}</small><app-language-selector [compact]="true" /></div>
+      <small class="sound-notice">{{ i18n.t('soundNotice') }}</small>
+    </section>
+  </main>
+</ion-content>

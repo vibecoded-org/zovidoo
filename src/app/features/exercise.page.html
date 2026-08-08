@@ -1,0 +1,14 @@
+<ion-content [fullscreen]="true" class="app-content">
+  @if (active?.state !== 'completed') { @if (active; as current) { @if (question; as currentQuestion) {
+    <main class="page exercise">
+      <header class="exercise-header"><button [attr.aria-label]="i18n.t('exit')" (click)="exit()">×</button><div class="session-progress">@for (item of current.questions; track item.id; let index = $index) { <i [class.done]="index < current.index" [class.current]="index === current.index"></i> }</div><time>{{ format(elapsed) }}</time></header>
+      <p class="overline">{{ title }}</p><div class="listen"><button class="replay" (click)="replay()" [attr.aria-label]="i18n.t('replay')"><span>♬</span><b>{{ i18n.t('replay') }}</b><small>{{ i18n.t('listenClosely') }}</small></button></div>
+      <div class="question">@if (isProgressionChord()) { <div class="dots">@for (symbol of ('chordSymbols' in currentQuestion ? currentQuestion.chordSymbols : []); track $index; let index = $index) { <i [class.on]="index < chordIndex()"></i> }</div> } @if (chordRootMode()) { <p class="stage">{{ i18n.t('nowRoot') }}</p> }<h1>{{ chordRootMode() ? i18n.t('rootPrompt') : currentQuestion.prompt }}</h1>@if (isProgressionChord()) { <p class="helper">{{ i18n.t('chordOf', { current: chordIndex(), total: 'chordSymbols' in currentQuestion ? currentQuestion.chordSymbols.length : 0 }) }}</p> }</div>
+      @if (type === 'note' || chordRootMode()) { <app-pitch-keyboard [selected]="selected" [disabled]="!!feedback" (answered)="asPitch($event)" /> } @else { <app-four-choice [options]="displayedOptions()" [disabled]="!!feedback" [feedback]="feedback" [selected]="selected" [answer]="displayedAnswer()" (answered)="progressAnswer($event)" /> }
+      @if (feedback) { <div class="feedback" [class.good]="feedback === 'correct'" [class.bad]="feedback === 'incorrect'">{{ feedback === 'correct' ? i18n.t('correct') : i18n.t('incorrect') }}</div> }
+    </main>
+  } } }
+  @if (active?.state === 'completed') {
+    <main class="page result"><div class="result-star">✦</div><p class="overline">{{ i18n.t('complete') }}</p><h1>{{ i18n.t('beautiful') }}</h1><p>{{ i18n.t('completeBody') }}</p><div class="result-grid"><div><b>5 / 5</b><span>{{ i18n.t('completed') }}</span></div><div><b>{{ active?.mistakes }}</b><span>{{ i18n.t('mistakes') }}</span></div></div><button class="primary" (click)="router.navigateByUrl('/tabs/practice')">{{ i18n.t('practiceAgain') }} <span>→</span></button><button class="text-button" (click)="router.navigateByUrl('/tabs/home')">{{ i18n.t('backHome') }}</button></main>
+  }
+</ion-content>

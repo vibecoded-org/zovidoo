@@ -1,0 +1,124 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+:root { --ink: #25243a; --muted: #777487; --surface: #ffffff; --line: #e8e6ee; }
+* { box-sizing: border-box; }
+body { background: #fbfaff; color: var(--ink); }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid #6b58db; outline-offset: 3px; }
+.app-content { --background: #fbfaff; }
+.page { width: min(100%, 680px); margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 20px 24px; }
+@media (prefers-color-scheme: dark) { :root { --ink:#f4f2ff; --muted:#b4b0c2; --surface:#202235; --line:#383a50; } body,.app-content { background:#161724; } .app-content { --background:#161724; } }
+@media (min-width: 760px) { .page { padding-left: 30px; padding-right: 30px; } }
+/* Zovidoo Ionic theme */
+:root {
+  --ion-color-primary: #5544ca;
+  --ion-color-primary-rgb: 85, 68, 202;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #4b3bb1;
+  --ion-color-primary-tint: #6657cf;
+  --ion-color-secondary: #35b6a2;
+  --ion-color-secondary-rgb: 53, 182, 162;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #2f9f8e;
+  --ion-color-secondary-tint: #4abdab;
+  --ion-color-success: #278c80;
+  --ion-color-success-rgb: 39, 140, 128;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-danger: #c13855;
+  --ion-color-danger-rgb: 193, 56, 85;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-dark: #fbfaff;
+  --ion-color-dark-rgb: 251, 250, 255;
+  --ion-color-dark-contrast: #25243a;
+  --ion-color-dark-contrast-rgb: 37, 36, 58;
+  --ion-color-dark-shade: #dedde0;
+  --ion-color-dark-tint: #fbfaff;
+  --ion-background-color: #fbfaff;
+  --ion-background-color-rgb: 251, 250, 255;
+  --ion-text-color: #25243a;
+  --ion-text-color-rgb: 37, 36, 58;
+  --ion-item-background: #ffffff;
+  --ion-toolbar-background: #fbfaff;
+  --ion-tab-bar-background: var(--ion-color-dark);
+  --ion-tab-bar-color: #777487;
+  --ion-tab-bar-color-selected: #5544ca;
+}
+
+ion-tabs,
+ion-tabs .tabs-inner,
+ion-router-outlet {
+  background: var(--ion-background-color);
+}
+
+ion-tab-bar {
+  --background: var(--ion-tab-bar-background);
+  --color: var(--ion-tab-bar-color);
+  --color-selected: var(--ion-tab-bar-color-selected);
+  --border: 0;
+  border-top: 0;
+}
+
+ion-tab-button {
+  --ripple-color: color-mix(in srgb, var(--ion-color-primary) 18%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-color-dark: #161724;
+    --ion-color-dark-rgb: 22, 23, 36;
+    --ion-color-dark-contrast: #f4f2ff;
+    --ion-color-dark-contrast-rgb: 244, 242, 255;
+    --ion-color-dark-shade: #131420;
+    --ion-color-dark-tint: #2d2e3a;
+    --ion-background-color: #161724;
+    --ion-background-color-rgb: 22, 23, 36;
+    --ion-text-color: #f4f2ff;
+    --ion-text-color-rgb: 244, 242, 255;
+    --ion-item-background: #202235;
+    --ion-toolbar-background: #161724;
+    --ion-tab-bar-background: var(--ion-color-dark);
+    --ion-tab-bar-color: #b4b0c2;
+    --ion-tab-bar-color-selected: #c0b5ff;
+  }
+}

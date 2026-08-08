@@ -1,0 +1,7 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { PitchClass } from '../core/models';
+import { TranslationService } from '../core/translation.service';
+const whites: PitchClass[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const blacks: { key: PitchClass; left: number }[] = [{ key: 'C#/Db', left: 14.3 }, { key: 'D#/Eb', left: 28.6 }, { key: 'F#/Gb', left: 57.1 }, { key: 'G#/Ab', left: 71.4 }, { key: 'A#/Bb', left: 85.7 }];
+@Component({ selector: 'app-pitch-keyboard', template: `<div class="piano" role="group" [attr.aria-label]="i18n.t('pianoAnswers')">@for (key of whiteKeys; track key) { <button class="white-key" [class.selected]="selected === key" [disabled]="disabled" (click)="select(key)" [attr.aria-label]="key">{{ key }}</button> } @for (key of blackKeys; track key.key) { <button class="black-key" [style.left.%]="key.left" [class.selected]="selected === key.key" [disabled]="disabled" (click)="select(key.key)" [attr.aria-label]="key.key.replace('/', ' / ')">{{ key.key.split('/')[0] }}</button> }</div>`, styleUrls: ['./answer-components.scss'], changeDetection: ChangeDetectionStrategy.OnPush, standalone: true })
+export class PitchKeyboardComponent { @Input() disabled = false; @Input() selected = ''; @Output() answered = new EventEmitter<PitchClass>(); whiteKeys = whites; blackKeys = blacks; constructor(readonly i18n: TranslationService) {} select(key: PitchClass): void { this.answered.emit(key); } }

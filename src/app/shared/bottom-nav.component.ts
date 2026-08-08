@@ -1,0 +1,5 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslationService } from '../core/translation.service';
+@Component({ selector: 'app-bottom-nav', template: `<nav class="bottom-nav" aria-label="Main navigation"><button (click)="go('/home')" [class.active]="is('/home')"><span>⌂</span>{{ i18n.t('home') }}</button><button (click)="go('/practice')" [class.active]="is('/practice')"><span>♬</span>{{ i18n.t('practice') }}</button><button (click)="go('/history')" [class.active]="is('/history')"><span>◷</span>{{ i18n.t('history') }}</button><button (click)="go('/settings')" [class.active]="is('/settings')"><span>⚙</span>{{ i18n.t('settings') }}</button></nav>`, styleUrls: ['./bottom-nav.component.scss'], changeDetection: ChangeDetectionStrategy.OnPush, standalone: true })
+export class BottomNavComponent { constructor(private readonly router: Router, readonly i18n: TranslationService) {} go(path: string): void { void this.router.navigateByUrl(path); } is(path: string): boolean { return this.router.url === path; } }

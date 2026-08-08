@@ -1,0 +1,4 @@
+.bottom-nav { position: fixed; z-index: 20; bottom: max(10px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 520px); display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #e6e8ef; background: rgba(255,255,255,.94); backdrop-filter: blur(18px); border-radius: 20px; padding: 6px; box-shadow: 0 12px 30px #20243a22; }
+.bottom-nav button { border: 0; color: #73798a; background: transparent; padding: 7px 3px; font: 700 .68rem/1.1 inherit; display: grid; gap: 4px; justify-items: center; }
+.bottom-nav span { font-size: 1.15rem; line-height: 1; }.bottom-nav .active { color: #4c3dca; background: #eeeaff; border-radius: 14px; }
+@media (prefers-color-scheme: dark) { .bottom-nav { background: rgba(27,31,47,.94); border-color: #3c4154; } }
