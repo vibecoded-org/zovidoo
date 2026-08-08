@@ -31,6 +31,10 @@ export class MusicTheoryService {
     const root = Note.pitchClass(symbol) || notes[0] || 'C';
     return notes.map((note, index) => `${note}${octave + (index && this.semitone(note) < this.semitone(root) ? 1 : 0)}`);
   }
+  invert(notes: string[], inversion: number): string[] {
+    const raised = notes.slice(0, inversion).map(note => note.replace(/(-?\d+)$/, (_, octave: string) => String(Number(octave) + 1)));
+    return [...notes.slice(inversion), ...raised];
+  }
   progressionSymbols(key: string, degrees: string[]): string[] {
     const intervals: Record<string, string> = { I: '1P', ii: '2M', iii: '3M', IV: '4P', V: '5P', vi: '6M', V7: '5P' };
     return degrees.map(degree => {

@@ -11,7 +11,7 @@ O script `scripts/publish-pages.sh` faz o build de produção e publica somente 
    ./scripts/publish-pages.sh
    ```
 
-   O script cria `gh-pages` se ela não existir. Nas execuções seguintes, ele substitui o conteúdo da branch pelos arquivos do build atual, adiciona `.nojekyll` e cria `404.html` a partir de `index.html` para links internos do Angular continuarem funcionando.
+   O script cria `gh-pages` se ela não existir. Nas execuções seguintes, ele substitui o conteúdo da branch pelos arquivos do build atual, adiciona `.nojekyll`, cria `404.html` a partir de `index.html` e valida base URL, manifesto, service worker e fallback de rotas antes do push.
 
 3. Para publicar em outro nome de branch ou remoto:
 

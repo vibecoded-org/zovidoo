@@ -1,4 +1,5 @@
-export type ExerciseType = 'note' | 'interval' | 'chord' | 'chord-symbol' | 'progression' | 'progression-chords';
+export type ExerciseType = 'note' | 'interval' | 'harmonic-interval' | 'chord' | 'inversion' | 'chord-symbol' | 'progression' | 'progression-chords' | 'cadence' | 'rhythm';
+export type SessionKind = ExerciseType | 'quick';
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 export type AppLanguage = 'en' | 'es' | 'pt-BR';
 export type Instrument = 'piano' | 'acoustic-guitar' | 'electric-piano' | 'organ' | 'vibraphone' | 'warm-pad' | 'marimba' | 'random';
@@ -16,7 +17,7 @@ export interface AppSettings {
 }
 export interface SessionSummary {
   id: string;
-  type: ExerciseType;
+  type: SessionKind;
   startedAt: string;
   completedAt: string;
   durationMs: number;
@@ -25,12 +26,18 @@ export interface SessionSummary {
   incorrectAnswers: number;
   firstAttemptCorrect: number;
   difficulty: Difficulty;
+  exerciseBreakdown?: Partial<Record<ExerciseType, number>>;
+  skillResults?: Partial<Record<ExerciseType, SkillResult>>;
 }
+export interface SkillResult { questions: number; firstAttemptCorrect: number; incorrectAnswers: number; }
+export interface SkillProgress { score: number; level: Difficulty; attempts: number; recentResults: boolean[]; updatedAt: string; }
+export type SkillProgressMap = Record<ExerciseType, SkillProgress>;
 export interface AppData {
-  version: 1;
+  version: 3;
   profile?: UserProfile;
   settings: AppSettings;
   sessions: SessionSummary[];
+  skillProgress: SkillProgressMap;
 }
 
 export interface ChoiceQuestion {
@@ -65,13 +72,16 @@ export interface ExerciseDefinition {
   distractorPolicy: 'adaptive-musical-proximity';
 }
 export interface AudioPayload {
-  kind: 'note' | 'interval' | 'chord' | 'progression';
+  kind: 'note' | 'interval' | 'chord' | 'progression' | 'rhythm';
   notes: string[];
   duration?: number;
+  rhythm?: number[];
 }
 export type ExerciseState = 'preparing' | 'playing' | 'waitingForAnswer' | 'correct' | 'incorrect' | 'completed';
 
 export const PITCH_CLASSES: PitchClass[] = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
+export const EXERCISE_TYPES: ExerciseType[] = ['note', 'interval', 'harmonic-interval', 'chord', 'inversion', 'chord-symbol', 'progression', 'progression-chords', 'cadence', 'rhythm'];
+export const defaultSkillProgress = (): SkillProgressMap => EXERCISE_TYPES.reduce((progress, type) => ({ ...progress, [type]: { score: 50, level: 3 as Difficulty, attempts: 0, recentResults: [], updatedAt: new Date(0).toISOString() } }), {} as SkillProgressMap);
 export const DEFAULT_SETTINGS: AppSettings = {
   dailyGoal: 10, volume: -8, darkMode: false, instrument: 'piano',
   dailyReminder: { enabled: false, time: '19:00' },

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { homeOutline, musicalNotesOutline, settingsOutline, timeOutline } from 'ionicons/icons';
@@ -24,5 +24,5 @@ addIcons({ homeOutline, musicalNotesOutline, timeOutline, settingsOutline });
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabsPage {
-  constructor(readonly i18n: TranslationService) {}
+  readonly i18n = inject(TranslationService);
 }

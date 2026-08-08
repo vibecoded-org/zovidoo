@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { NotificationService } from '../core/notification.service';
 import { StorageService } from '../core/storage.service';
@@ -9,8 +9,13 @@ import { AudioEngineService } from '../core/audio-engine.service';
 import { Instrument } from '../core/models';
 @Component({ selector: 'app-settings', templateUrl: './settings.page.html', styleUrls: ['./features.scss'], standalone: true, imports: [IonContent, IonInput, IonSelect, IonSelectOption, IonToggle, LanguageSelectorComponent] })
 export class SettingsPage {
+  readonly storage = inject(StorageService);
+  readonly notifications = inject(NotificationService);
+  readonly i18n = inject(TranslationService);
+  private readonly alerts = inject(AlertController);
+  private readonly audio = inject(AudioEngineService);
+
   importMessage = '';
-  constructor(readonly storage: StorageService, readonly notifications: NotificationService, readonly i18n: TranslationService, private readonly alerts: AlertController, private readonly audio: AudioEngineService) {}
   updateGoal(goal: string): void { this.storage.updateSettings({ dailyGoal: Number(goal) }); }
   updateInstrument(instrument: Instrument): void { this.storage.updateSettings({ instrument }); this.audio.setInstrument(instrument); }
   updateReminderTime(time: string): void { this.storage.updateSettings({ dailyReminder: { ...this.storage.settings().dailyReminder, time } }); }

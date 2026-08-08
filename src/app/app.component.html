@@ -1,3 +1,4 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
+  @if (updates.available()) { <div class="update-banner" role="status"><span>{{ i18n.t('updateAvailable') }}</span><button (click)="updates.apply()">{{ i18n.t('updateNow') }}</button></div> }
 </ion-app>

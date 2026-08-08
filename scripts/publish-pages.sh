@@ -55,6 +55,8 @@ if [[ -n "${PAGES_CNAME:-}" ]]; then
   printf '%s\n' "$PAGES_CNAME" > "$PUBLISH_DIR/CNAME"
 fi
 
+"$ROOT_DIR/scripts/verify-pages-build.sh" "$PUBLISH_DIR" "$BASE_HREF"
+
 git -C "$PUBLISH_DIR" add --all
 if git -C "$PUBLISH_DIR" diff --cached --quiet; then
   printf 'GitHub Pages is already up to date.\n'

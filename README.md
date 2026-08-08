@@ -20,10 +20,10 @@ Exercise generation is deterministic when supplied a random function and always 
 All data is stored under `zovidoo-ear-training` as:
 
 ```json
-{ "version": 1, "profile": { "name": "…", "createdAt": "…" }, "settings": {}, "sessions": [] }
+{ "version": 3, "profile": { "name": "…", "createdAt": "…" }, "settings": {}, "sessions": [], "skillProgress": {} }
 ```
 
-The export wrapper includes `app`, `schemaVersion`, `exportedAt`, and `data`. Imports validate schema 1 before restoring.
+The export wrapper includes `app`, `schemaVersion`, `exportedAt`, and `data`. Schemas 1 and 2 are migrated safely to schema 3; imports validate their exercise types, numeric limits and dates before replacing any local state. Each skill retains a local score (0–100), level (1–5), recent first-attempt results and last-update timestamp.
 
 ## Run and build
 
@@ -47,4 +47,4 @@ For native shells, install the platform then sync the built `www` folder with Ca
 
 ## Known MVP boundaries
 
-Browser reminders request permission only when enabled; scheduled native local notifications are prepared behind the notification abstraction but require a native notification plugin to schedule in an installed build. Difficulty 1 focuses on pedagogical core material; adaptive curriculum, inversions, harmonic intervals, MIDI and cloud sync remain future work.
+Browser reminders only fire while Zovidoo remains open; background scheduling needs Web Push or a native notification plugin and is intentionally not presented as guaranteed. The current adaptive curriculum uses per-skill mastery. Inversions, harmonic intervals, MIDI, sample packs, accounts and sync remain future work.

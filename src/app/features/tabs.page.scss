@@ -1,3 +1,13 @@
 :host { display:block; position:absolute; inset:0; overflow:hidden; }
 ion-tabs { position:absolute; inset:0; height:100%; overflow:hidden; background:var(--ion-background-color); }
 ion-tab-bar { position:relative; z-index:10; flex:0 0 auto; }
+
+/* A browser viewport has no app safe area; keep the navigation flush to its edge. */
+@media (display-mode: browser) {
+  ion-tab-bar { --ion-safe-area-bottom: 0px; min-height:56px; height:56px; padding-bottom:0; }
+}
+
+/* Installed PWAs need room for the system home indicator. */
+@media (display-mode: standalone) {
+  ion-tab-bar { padding-bottom:env(safe-area-inset-bottom); }
+}

@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { AppUpdateService } from './core/app-update.service';
+import { TranslationService } from './core/translation.service';
+import { NotificationService } from './core/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +11,4 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
   standalone: true,
   imports: [IonApp, IonRouterOutlet],
 })
-export class AppComponent {}
+export class AppComponent { readonly updates = inject(AppUpdateService); readonly i18n = inject(TranslationService); private readonly notifications = inject(NotificationService); }
