@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Zovidoo</title>
+  <defs>
+    <linearGradient id="background" x1="72" y1="50" x2="446" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39306f"/>
+      <stop offset=".54" stop-color="#5544c7"/>
+      <stop offset="1" stop-color="#27326c"/>
+    </linearGradient>
+    <linearGradient id="ear" x1="252" y1="98" x2="422" y2="407" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a89dff"/>
+      <stop offset="1" stop-color="#58e0c6"/>
+    </linearGradient>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#background)"/>
+  <path d="M335 100c75 0 119 62 108 143-9 66-43 143-100 165-34 13-68 3-82-23-13-24-7-58 22-79 27-20 45-45 48-82 3-35-11-57-37-62" fill="none" stroke="#ffffff2b" stroke-width="31" stroke-linecap="round"/>
+  <path d="M331 105c72 1 112 60 101 137-9 64-41 135-94 155-26 10-52 2-63-18-10-18-4-42 19-59 32-24 50-56 53-96 3-44-17-71-49-78" fill="none" stroke="url(#ear)" stroke-width="25" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="M131 148h190L159 364h188" fill="none" stroke="#fff" stroke-width="35" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M321 148c-12-25-25-42-46-53" fill="none" stroke="#fff" stroke-width="35" stroke-linecap="round"/>
+  <circle cx="306" cy="286" r="11" fill="#fff"/>
+</svg>
