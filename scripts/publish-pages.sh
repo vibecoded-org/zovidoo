@@ -42,6 +42,8 @@ if git -C "$ROOT_DIR" ls-remote --exit-code --heads "$REMOTE_NAME" "$PUBLISH_BRA
   REMOTE_REF="refs/remotes/$REMOTE_NAME/$PUBLISH_BRANCH"
   git -C "$ROOT_DIR" fetch "$REMOTE_NAME" "refs/heads/$PUBLISH_BRANCH:$REMOTE_REF"
   git -C "$ROOT_DIR" worktree add --detach "$WORKTREE_DIR" "$REMOTE_REF"
+elif git -C "$ROOT_DIR" show-ref --verify --quiet "refs/heads/$PUBLISH_BRANCH"; then
+  git -C "$ROOT_DIR" worktree add --detach "$WORKTREE_DIR" "refs/heads/$PUBLISH_BRANCH"
 else
   git -C "$ROOT_DIR" worktree add --detach "$WORKTREE_DIR"
   git -C "$WORKTREE_DIR" checkout --orphan "$PUBLISH_BRANCH"
@@ -49,7 +51,7 @@ fi
 WORKTREE_READY=true
 
 # This worktree contains only the deployment branch, never the working branch.
-git -C "$WORKTREE_DIR" rm -r --ignore-unmatch -- .
+git -C "$WORKTREE_DIR" rm -r --force --ignore-unmatch -- .
 git -C "$WORKTREE_DIR" clean -fdx
 cp -R "$BUILD_DIR"/. "$WORKTREE_DIR"/
 
