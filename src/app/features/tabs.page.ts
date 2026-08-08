@@ -10,9 +10,10 @@ addIcons({ homeOutline, musicalNotesOutline, timeOutline, settingsOutline });
   selector: 'app-tabs',
   standalone: true,
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
+  styleUrls: ['./tabs.page.scss'],
   template: `
-    <ion-tabs >
-      <ion-tab-bar slot="bottom" [attr.aria-label]="i18n.t('navigation')" [color]="'dark'">
+    <ion-tabs>
+      <ion-tab-bar slot="bottom" [attr.aria-label]="i18n.t('navigation')">
         <ion-tab-button tab="home" href="/tabs/home"><ion-icon name="home-outline" aria-hidden="true"></ion-icon><ion-label>{{ i18n.t('home') }}</ion-label></ion-tab-button>
         <ion-tab-button tab="practice" href="/tabs/practice"><ion-icon name="musical-notes-outline" aria-hidden="true"></ion-icon><ion-label>{{ i18n.t('practice') }}</ion-label></ion-tab-button>
         <ion-tab-button tab="history" href="/tabs/history"><ion-icon name="time-outline" aria-hidden="true"></ion-icon><ion-label>{{ i18n.t('history') }}</ion-label></ion-tab-button>

@@ -1,5 +1,5 @@
 {
-  "id": "./",
+  "id": "../",
   "name": "Zovidoo",
   "short_name": "Zovidoo",
   "description": "Focused musical listening practice for notes, intervals, chords and progressions.",
@@ -7,8 +7,8 @@
   "dir": "ltr",
   "display": "standalone",
   "display_override": ["standalone"],
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "../",
+  "scope": "../",
   "orientation": "portrait-primary",
   "background_color": "#fbfaff",
   "theme_color": "#5544ca",

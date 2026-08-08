@@ -43,6 +43,7 @@ button, input { font: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible { outline: 3px solid #6b58db; outline-offset: 3px; }
 .app-content { --background: #fbfaff; }
+.app-content::part(scroll) { overscroll-behavior-y: contain; }
 .page { width: min(100%, 680px); margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 20px 24px; }
 @media (prefers-color-scheme: dark) { :root { --ink:#f4f2ff; --muted:#b4b0c2; --surface:#202235; --line:#383a50; } body,.app-content { background:#161724; } .app-content { --background:#161724; } }
 @media (min-width: 760px) { .page { padding-left: 30px; padding-right: 30px; } }
@@ -85,8 +86,6 @@ button:focus-visible, input:focus-visible { outline: 3px solid #6b58db; outline-
   --ion-tab-bar-color-selected: #5544ca;
 }
 
-ion-tabs,
-ion-tabs .tabs-inner,
 ion-router-outlet {
   background: var(--ion-background-color);
 }

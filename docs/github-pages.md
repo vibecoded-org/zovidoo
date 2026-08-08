@@ -21,16 +21,16 @@ O script `scripts/publish-pages.sh` faz o build de produção e publica somente 
 
 ## Base URL
 
-Para um site de usuário/organização ou domínio próprio, use a raiz:
+O build local continua usando a raiz (`/`). Este projeto é publicado em `https://vibecoded-org.github.io/zovidoo/`; por isso o script de publicação, e somente ele, usa `/zovidoo/` como base padrão:
 
 ```bash
 ./scripts/publish-pages.sh
 ```
 
-Para um site de projeto em `https://<usuario>.github.io/<repositorio>/`, informe o nome do repositório:
+Para publicar este mesmo build na raiz de um domínio próprio, substitua a base:
 
 ```bash
-BASE_HREF="/<repositorio>/" ./scripts/publish-pages.sh
+BASE_HREF="/" ./scripts/publish-pages.sh
 ```
 
 Opcionalmente, para preservar um domínio próprio na branch publicada:
