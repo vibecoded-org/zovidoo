@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1786210791932,
+  "timestamp": 1786211294204,
   "index": "/zovidoo/index.html",
   "assetGroups": [
     {
@@ -29,7 +29,7 @@
         "/zovidoo/2950.897f25476e88120d.js",
         "/zovidoo/3162.9a62abc4bcdbc65a.js",
         "/zovidoo/323.2dcdb2c4d8bcd428.js",
-        "/zovidoo/3294.5a89f9f848a94de9.js",
+        "/zovidoo/3294.3383a1918a1c1680.js",
         "/zovidoo/3498.769877e09943ac6c.js",
         "/zovidoo/3506.349c43a798b83a69.js",
         "/zovidoo/3511.8e04b5106096741a.js",
@@ -87,8 +87,8 @@
         "/zovidoo/index.html",
         "/zovidoo/main.31068581b72c57c5.js",
         "/zovidoo/polyfills.06cbf0422dbf6c09.js",
-        "/zovidoo/runtime.8b1e1b651272b183.js",
-        "/zovidoo/styles.64e9111ae2ee2e2c.css"
+        "/zovidoo/runtime.04ee679f4bac743e.js",
+        "/zovidoo/styles.6bc9244966b3cafa.css"
       ],
       "patterns": []
     },
@@ -131,7 +131,7 @@
     "/zovidoo/2950.897f25476e88120d.js": "90d08fbeb78de870543125b91f2bb2d396fc6642",
     "/zovidoo/3162.9a62abc4bcdbc65a.js": "eab34d1af5d0537413ac6ff23368ed13695b7787",
     "/zovidoo/323.2dcdb2c4d8bcd428.js": "bec53b5e74e0b0b5d384d540166d0d6de3fad59c",
-    "/zovidoo/3294.5a89f9f848a94de9.js": "1aa39dc580ec89f8513009069b5f817966b21943",
+    "/zovidoo/3294.3383a1918a1c1680.js": "426b734849b9330ddff749ea362786c4ba8c2d58",
     "/zovidoo/3498.769877e09943ac6c.js": "e0938c45725e15a2f6dd53a707adc819711cda08",
     "/zovidoo/3506.349c43a798b83a69.js": "db1caac25d4b8c4bc1d14769f960cb07b95a3a05",
     "/zovidoo/3511.8e04b5106096741a.js": "c5b3117e5014adfde6c1f086e19266133ca16980",
@@ -193,11 +193,11 @@
     "/zovidoo/assets/manifest.webmanifest": "83aca27670351892ba7ddc56ffc9ea23a8ca361c",
     "/zovidoo/assets/shapes.svg": "5413e95adabcb2cb639970051f55e0ddb64ace53",
     "/zovidoo/common.92d1e26651211039.js": "db930ef3a34568b3458e8f6a52f252693076e723",
-    "/zovidoo/index.html": "756238d23101097ab3076fb615758392a11faf0b",
+    "/zovidoo/index.html": "21ec65fcc75a1b7fe6a5ddc1954884e8380a332b",
     "/zovidoo/main.31068581b72c57c5.js": "46c9e80353babac8833f27833fce4908c3b0fa91",
     "/zovidoo/polyfills.06cbf0422dbf6c09.js": "937619036a8b0ad87acb2897cc94f6eaedc45426",
-    "/zovidoo/runtime.8b1e1b651272b183.js": "1229bd82a9bf219acdb048defb9642e18bd0442e",
-    "/zovidoo/styles.64e9111ae2ee2e2c.css": "2dd994e2b9cd9942f20349da2b54c3518916ded4"
+    "/zovidoo/runtime.04ee679f4bac743e.js": "aa30145919eb26a53ef216157db75c83d8ad0288",
+    "/zovidoo/styles.6bc9244966b3cafa.css": "b0804a79a90c6dc4105c186cb140d53c0a9cee1e"
   },
   "navigationUrls": [
     {
