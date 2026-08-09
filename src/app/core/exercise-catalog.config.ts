@@ -17,10 +17,19 @@ export type ProgressionLengthRule = 3 | 4 | 'mixed';
  * history and progress are retained.
  */
 export interface ExerciseDifficultyConfiguration {
+  /** Every level has a finite error allowance before the question is failed. */
+  maxMistakesPerQuestion: number;
   contentScope: ContentScope;
   distractorSimilarity: DistractorSimilarity;
   choiceCount: number;
+  /** Limits the ordered content pool for gradual musical complexity. */
+  contentCount?: number;
   progressionLength?: ProgressionLengthRule;
+  note?: {
+    keyboardOptionCount: 2 | 4 | 6 | 8 | 12;
+    octaveRange: readonly [3 | 4 | 5, 3 | 4 | 5];
+    references: { count: 0 | 1 | 2; selection?: 'random' };
+  };
 }
 
 export interface ExerciseConfiguration extends ExerciseDefinition {
@@ -30,44 +39,38 @@ export interface ExerciseConfiguration extends ExerciseDefinition {
   levels: Record<Difficulty, ExerciseDifficultyConfiguration>;
 }
 
+export const defineLevels = <T extends ExerciseDifficultyConfiguration>(levels: Record<Difficulty, T>): Record<Difficulty, T> => levels;
+const errors = (level: Difficulty): number => level === 1 ? 5 : level === 2 ? 4 : level <= 4 ? 3 : level <= 7 ? 2 : level <= 9 ? 1 : 0;
 const level = (
+  levelNumber: Difficulty,
   contentScope: ContentScope,
   distractorSimilarity: DistractorSimilarity,
   progressionLength?: ProgressionLengthRule,
+  contentCount?: number,
 ): ExerciseDifficultyConfiguration => ({
+  maxMistakesPerQuestion: errors(levelNumber),
   contentScope,
   distractorSimilarity,
-  choiceCount: 4,
+  choiceCount: Math.min(4, Math.max(2, contentCount ?? 4)),
+  contentCount,
   progressionLength,
 });
-const introductory = {
-  1: level('core', 'distant'),
-  2: level('extended', 'distant'),
-  3: level('extended', 'similar'),
-  4: level('extended', 'similar'),
-  5: level('extended', 'similar'),
-} satisfies Record<Difficulty, ExerciseDifficultyConfiguration>;
-const harmonic = {
-  1: level('core', 'distant'),
-  2: level('core', 'distant'),
-  3: level('extended', 'similar'),
-  4: level('extended', 'similar'),
-  5: level('extended', 'similar'),
-} satisfies Record<Difficulty, ExerciseDifficultyConfiguration>;
-const advanced = {
-  1: level('core', 'distant'),
-  2: level('extended', 'distant'),
-  3: level('extended', 'similar'),
-  4: level('extended', 'similar'),
-  5: level('extended', 'similar'),
-} satisfies Record<Difficulty, ExerciseDifficultyConfiguration>;
-const mixedProgressions = {
-  1: level('core', 'distant', 3),
-  2: level('extended', 'distant', 3),
-  3: level('extended', 'similar', 4),
-  4: level('extended', 'similar', 4),
-  5: level('extended', 'similar', 'mixed'),
-} satisfies Record<Difficulty, ExerciseDifficultyConfiguration>;
+const standardLevels = (progression = false): Record<Difficulty, ExerciseDifficultyConfiguration> => defineLevels({
+  1: level(1, 'core', 'distant', progression ? 3 : undefined, 1), 2: level(2, 'core', 'distant', progression ? 3 : undefined, 2),
+  3: level(3, 'core', 'distant', progression ? 3 : undefined, 3), 4: level(4, 'core', 'distant', progression ? 3 : undefined, 4),
+  5: level(5, 'core', 'distant', progression ? 3 : undefined, 5), 6: level(6, 'extended', 'distant', progression ? 4 : undefined, 6),
+  7: level(7, 'extended', 'distant', progression ? 4 : undefined, 7), 8: level(8, 'extended', 'similar', progression ? 4 : undefined, 8),
+  9: level(9, 'extended', 'similar', progression ? 'mixed' : undefined, 9), 10: level(10, 'extended', 'similar', progression ? 'mixed' : undefined, 10),
+});
+const noteLevel = (levelNumber: Difficulty, keyboardOptionCount: 2 | 4 | 6 | 8 | 12, octaveRange: readonly [3 | 4 | 5, 3 | 4 | 5], referenceCount: 0 | 1 | 2): ExerciseDifficultyConfiguration => ({ ...level(levelNumber, 'extended', levelNumber >= 8 ? 'similar' : 'distant', undefined, levelNumber), choiceCount: keyboardOptionCount, note: { keyboardOptionCount, octaveRange, references: { count: referenceCount, ...(referenceCount ? { selection: 'random' as const } : {}) } } });
+const noteLevels = defineLevels({
+  1: noteLevel(1, 2, [3, 3], 2), 2: noteLevel(2, 4, [3, 3], 2), 3: noteLevel(3, 4, [3, 3], 2), 4: noteLevel(4, 6, [3, 3], 2), 5: noteLevel(5, 6, [3, 3], 2),
+  6: noteLevel(6, 6, [3, 3], 1), 7: noteLevel(7, 8, [3, 3], 1), 8: noteLevel(8, 8, [3, 4], 1), 9: noteLevel(9, 12, [3, 4], 0), 10: noteLevel(10, 12, [3, 5], 0),
+});
+const introductory = standardLevels();
+const harmonic = standardLevels();
+const advanced = standardLevels();
+const mixedProgressions = standardLevels(true);
 
 export const EXERCISE_CATALOG: Record<ExerciseType, ExerciseConfiguration> = {
   progression: {
@@ -123,7 +126,7 @@ export const EXERCISE_CATALOG: Record<ExerciseType, ExerciseConfiguration> = {
     flow: 'single-answer',
     questionCount: 5,
     distractorPolicy: 'adaptive-musical-proximity',
-    levels: introductory,
+    levels: noteLevels,
   },
   interval: {
     id: 'interval',

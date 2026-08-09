@@ -1,0 +1,13 @@
+FluidR3 General MIDI soundfont excerpts
+
+Files:
+- acoustic_grand_piano-mp3.js
+- acoustic_guitar_nylon-mp3.js
+
+Source: https://github.com/gleitz/midi-js-soundfonts
+Original soundfont: FluidR3_GM by Frank Wen and contributors.
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+License text: https://creativecommons.org/licenses/by/3.0/
+
+These pre-rendered instrument files are bundled unchanged for offline use by
+Zovidoo. The source project documents FluidR3_GM as CC BY 3.0.

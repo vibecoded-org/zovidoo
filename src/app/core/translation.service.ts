@@ -63,12 +63,21 @@ Object.assign(ptBR, {
 Object.assign(en, { storageUnavailable: 'Changes cannot be saved in this browser.', audioStartFailed: 'Audio could not start. Check your sound settings and try again.' });
 Object.assign(es, { storageUnavailable: 'Los cambios no se pueden guardar en este navegador.', audioStartFailed: 'No se pudo iniciar el audio. Revisa el sonido e inténtalo otra vez.' });
 Object.assign(ptBR, { storageUnavailable: 'As alterações não podem ser salvas neste navegador.', audioStartFailed: 'Não foi possível iniciar o áudio. Verifique o som e tente novamente.' });
+Object.assign(en, { volume: 'Volume', volumeHelp: 'Adjust the practice playback level.' });
+Object.assign(es, { volume: 'Volumen', volumeHelp: 'Ajusta el nivel de reproducción de práctica.' });
+Object.assign(ptBR, { volume: 'Volume', volumeHelp: 'Ajuste o nível de reprodução da prática.' });
 Object.assign(en, { incorrectHint: 'Try again and listen for the shape of the sound.', thirdInversion: '3rd inversion', cadenceImperfect: 'Imperfect cadence', rhythmAnticipated: 'Anticipated pulse', rhythmBackbeat: 'Backbeat pulse' });
 Object.assign(es, { incorrectHint: 'Inténtalo de nuevo y escucha la forma del sonido.', thirdInversion: '3.ª inversión', cadenceImperfect: 'Cadencia imperfecta', rhythmAnticipated: 'Pulso anticipado', rhythmBackbeat: 'Pulso de contratiempo' });
 Object.assign(ptBR, { incorrectHint: 'Tente novamente e escute o desenho do som.', thirdInversion: '3ª inversão', cadenceImperfect: 'Cadência imperfeita', rhythmAnticipated: 'Pulso antecipado', rhythmBackbeat: 'Pulso de contratempo' });
 Object.assign(en, { continueListening: 'Good. Keep listening for the next step.' });
 Object.assign(es, { continueListening: 'Bien. Sigue escuchando el siguiente paso.' });
 Object.assign(ptBR, { continueListening: 'Certo. Continue ouvindo o próximo passo.' });
+Object.assign(en, { exerciseSummary: 'Exercise summary', noErrors: 'No errors', errors: '{count} errors' });
+Object.assign(es, { exerciseSummary: 'Resumen de ejercicios', noErrors: 'Sin errores', errors: '{count} errores' });
+Object.assign(ptBR, { exerciseSummary: 'Resumo dos exercícios', noErrors: 'Sem erros', errors: '{count} erros' });
+Object.assign(en, { freePlay: 'Free Play', freePlayTitle: 'Practice your way', freePlayIntro: 'Choose a skill and level, then keep your streak going.', freePlayCard: 'Choose a skill and level to practice freely.', freePlayExerciseHelp: 'Choose the skill to train.', freePlayLevelHelp: 'Choose one of the 10 difficulty levels.', startFreePlay: 'Start Free Play', bestRecord: 'Best record', inARow: 'in a row', record: 'record', exercise: 'Exercise' });
+Object.assign(es, { freePlay: 'Juego libre', freePlayTitle: 'Practica a tu manera', freePlayIntro: 'Elige una habilidad y nivel, y mantén tu racha.', freePlayCard: 'Elige una habilidad y nivel para practicar libremente.', freePlayExerciseHelp: 'Elige la habilidad que quieres entrenar.', freePlayLevelHelp: 'Elige uno de los 10 niveles de dificultad.', startFreePlay: 'Empezar juego libre', bestRecord: 'Mejor récord', inARow: 'seguidos', record: 'récord', exercise: 'Ejercicio' });
+Object.assign(ptBR, { freePlay: 'Free Play', freePlayTitle: 'Pratique do seu jeito', freePlayIntro: 'Escolha uma habilidade e nível, e mantenha sua sequência.', freePlayCard: 'Escolha uma habilidade e nível para praticar livremente.', freePlayExerciseHelp: 'Escolha a habilidade que quer treinar.', freePlayLevelHelp: 'Escolha um dos 10 níveis de dificuldade.', startFreePlay: 'Iniciar Free Play', bestRecord: 'Melhor recorde', inARow: 'seguidos', record: 'recorde', exercise: 'Exercício' });
 
 const translations: Record<AppLanguage, TranslationTable> = { en, es, 'pt-BR': ptBR };
 

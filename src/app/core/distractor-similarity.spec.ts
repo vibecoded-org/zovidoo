@@ -11,8 +11,9 @@ describe('adaptive musical distractors', () => {
     question.options.filter(option => option !== question.correctAnswer).forEach(option => expect(option.replace(/^[A-G](?:b|#)?/, '')).toBe(suffix));
   });
   it('uses closer interval alternatives at higher difficulty', () => {
-    const beginner = engine().generate('interval', 1, () => .4);
-    const advanced = engine().generate('interval', 4, () => .4);
+    const exerciseEngine = engine();
+    const beginner = exerciseEngine.generate('interval', 1, () => .4);
+    const advanced = exerciseEngine.generate('interval', 4, () => .4);
     expect(beginner.options).not.toEqual(advanced.options);
   });
 });

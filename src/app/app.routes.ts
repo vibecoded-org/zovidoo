@@ -5,6 +5,8 @@ export const routes: Routes = [
   { path: 'startup', loadComponent: () => import('./features/startup.page').then(m => m.StartupPage) },
   { path: 'onboarding', loadComponent: () => import('./features/onboarding.page').then(m => m.OnboardingPage) },
   { path: 'practice/:type', canActivate: [profileGuard, exerciseEnabledGuard], loadComponent: () => import('./features/exercise.page').then(m => m.ExercisePage) },
+  { path: 'free-play/:type/:level', data: { freePlay: true }, canActivate: [profileGuard, exerciseEnabledGuard], loadComponent: () => import('./features/exercise.page').then(m => m.ExercisePage) },
+  { path: 'free-play', canActivate: [profileGuard], loadComponent: () => import('./features/free-play.page').then(m => m.FreePlayPage) },
   { path: 'tabs', canActivate: [profileGuard], loadComponent: () => import('./features/tabs.page').then(m => m.TabsPage), children: [
     { path: 'home', loadComponent: () => import('./home/home.page').then(m => m.HomePage) },
     { path: 'practice', loadComponent: () => import('./features/practice.page').then(m => m.PracticePage) },

@@ -16,6 +16,7 @@ export class PracticePage {
   exercises = exercises;
   open(type: SessionKind): void { void this.router.navigate(['/practice', type]); }
   quick(): void { this.open('quick'); }
+  freePlay(): void { void this.router.navigateByUrl('/free-play'); }
   title(type: ExerciseType): string { return this.i18n.t(`exercise${exerciseTranslationKey(type)}`); }
   description(type: ExerciseType): string { return this.i18n.t(`exercise${exerciseTranslationKey(type)}Description`); }
   difficulty(type: ExerciseType): string { const skill = this.storage.skillProgress()[type]; return this.i18n.t('skillLevel', { level: skill.level, score: skill.score }); }

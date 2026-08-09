@@ -1,11 +1,11 @@
 # Zovidoo — musical ear training
 
-Zovidoo is a mobile-first Ionic/Angular app for short, focused practice in note, interval, chord and progression recognition. It works fully offline after the app bundle is available; audio is synthesized locally.
+Zovidoo is a mobile-first Ionic/Angular app for short, focused practice in note, interval, chord and progression recognition. It works fully offline after installation, including bundled sampled Piano and nylon-string Acoustic Guitar audio.
 
 ## Technology
 
 - Angular 20, Ionic 8 and Capacitor 8
-- Tone.js for a single shared polyphonic synth and scheduled playback
+- smplr for locally bundled sampled Piano and nylon-string Acoustic Guitar playback
 - Tonal for pitch/chord normalization and chord-note generation
 - Angular signals plus a namespaced `localStorage` repository
 
@@ -13,7 +13,7 @@ Zovidoo is a mobile-first Ionic/Angular app for short, focused practice in note,
 
 `src/app/core` contains audio, music theory, exercise generation, session orchestration, progress aggregation, notifications and persistence. `features` only presents these services. `shared` contains the answer interfaces and bottom navigation.
 
-Exercise generation is deterministic when supplied a random function and always produces intentional unique distractors. Sessions store only compact summaries; raw Tone nodes and audio are never persisted.
+Exercise generation is deterministic when supplied a random function and always produces intentional unique distractors. Sessions store only compact summaries; raw audio nodes and buffers are never persisted.
 
 Exercise behavior and musical pools are configured in `src/app/core/exercise-catalog.config.ts`. See [the exercise configuration guide](docs/exercise-configuration.md) to tune difficulty, choices, content pools or add a generator.
 
@@ -49,4 +49,4 @@ For native shells, install the platform then sync the built `www` folder with Ca
 
 ## Known MVP boundaries
 
-Browser reminders only fire while Zovidoo remains open; background scheduling needs Web Push or a native notification plugin and is intentionally not presented as guaranteed. The adaptive curriculum covers melodic and harmonic intervals, chord inversions, cadences and rhythm patterns through per-skill mastery. Sample packs, accounts and sync remain future work.
+Browser reminders only fire while Zovidoo remains open; background scheduling needs Web Push or a native notification plugin and is intentionally not presented as guaranteed. The adaptive curriculum covers melodic and harmonic intervals, chord inversions, cadences and rhythm patterns through per-skill mastery. Accounts and sync remain future work.
