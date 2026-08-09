@@ -38,6 +38,7 @@ describe('SessionService feedback transitions', () => {
     expect(summaries.length).toBe(1);
     expect(summaries[0].questions).toBe(1);
     expect(summaries[0].correctAnswers).toBe(1);
+    expect(summaries[0].exerciseBreakdown).toEqual({ interval: 1 });
   });
   it('builds a mixed quick session and records its completed skills', () => {
     const summaries: import('./models').SessionSummary[] = [];

@@ -13,7 +13,14 @@ export class OnboardingPage {
   private readonly router = inject(Router);
   readonly i18n = inject(TranslationService);
 
-  name = ''; loading = false;
+  name = ''; loading = false; errorMessage = '';
   setName(event: Event): void { this.name = (event.target as HTMLIonInputElement).value?.toString() ?? ''; }
-  async begin(): Promise<void> { if (!this.name.trim()) return; this.loading = true; try { await this.audio.initialize(); this.storage.saveProfile(this.name); await this.router.navigateByUrl('/tabs/home'); } finally { this.loading = false; } }
+  async begin(): Promise<void> {
+    if (!this.name.trim()) return;
+    this.loading = true; this.errorMessage = '';
+    this.storage.saveProfile(this.name);
+    if (this.storage.persistenceError()) { this.errorMessage = this.i18n.t('storageUnavailable'); this.loading = false; return; }
+    try { await this.audio.initialize(); } catch { /* The exercise replay button can retry after the app has opened. */ }
+    try { await this.router.navigateByUrl('/tabs/home'); } finally { this.loading = false; }
+  }
 }

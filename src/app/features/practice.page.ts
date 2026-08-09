@@ -5,7 +5,8 @@ import { EXERCISE_DEFINITIONS } from '../core/exercise-definitions';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslationService } from '../core/translation.service';
 import { StorageService } from '../core/storage.service';
-const exercises = EXERCISE_DEFINITIONS;
+import { exerciseTranslationKey, isExerciseEnabled } from '../core/exercise-catalog.config';
+const exercises = EXERCISE_DEFINITIONS.filter(exercise => isExerciseEnabled(exercise.id));
 @Component({ selector: 'app-practice', templateUrl: './practice.page.html', styleUrls: ['./features.scss'], standalone: true, imports: [IonContent] })
 export class PracticePage {
   private readonly router = inject(Router);
@@ -15,8 +16,7 @@ export class PracticePage {
   exercises = exercises;
   open(type: SessionKind): void { void this.router.navigate(['/practice', type]); }
   quick(): void { this.open('quick'); }
-  title(type: ExerciseType): string { return this.i18n.t(`exercise${this.key(type)}`); }
-  description(type: ExerciseType): string { return this.i18n.t(`exercise${this.key(type)}Description`); }
+  title(type: ExerciseType): string { return this.i18n.t(`exercise${exerciseTranslationKey(type)}`); }
+  description(type: ExerciseType): string { return this.i18n.t(`exercise${exerciseTranslationKey(type)}Description`); }
   difficulty(type: ExerciseType): string { const skill = this.storage.skillProgress()[type]; return this.i18n.t('skillLevel', { level: skill.level, score: skill.score }); }
-  private key(type: ExerciseType): string { return ({ note: 'Note', interval: 'Interval', chord: 'Chord', 'chord-symbol': 'ChordSymbol', progression: 'Progression', 'progression-chords': 'ProgressionChords' })[type]; }
 }

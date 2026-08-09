@@ -1,6 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { Difficulty, EXERCISE_TYPES, ExerciseQuestion, ExerciseState, ExerciseType, SessionKind, SessionSummary, SkillResult } from './models';
+import { Difficulty, ExerciseQuestion, ExerciseState, ExerciseType, SessionKind, SessionSummary, SkillResult } from './models';
 import { exerciseDefinition } from './exercise-definitions';
+import { enabledExerciseTypes, isExerciseEnabled } from './exercise-catalog.config';
 import { ExerciseEngineService, ExerciseGenerationOptions } from './exercise-engine.service';
 import { StorageService } from './storage.service';
 
@@ -17,6 +18,9 @@ export class SessionService {
   readonly active = signal<ActiveSession | undefined>(undefined);
 
   start(type: SessionKind, difficulty: Difficulty = 1): ActiveSession {
+    if (type !== 'quick' && !isExerciseEnabled(type)) {
+      throw new Error(`Exercise "${type}" is disabled.`);
+    }
     const generation: ExerciseGenerationOptions = { progressionLength: Math.random() < .5 ? 3 : 4 };
     const questions = type === 'quick' ? this.quickQuestions() : Array.from({ length: exerciseDefinition(type).questionCount }, () => this.engine.generate(type, difficulty, Math.random, generation));
     const first = questions[0]; const flow = exerciseDefinition(first.type).flow;
@@ -50,11 +54,14 @@ export class SessionService {
 
   private quickQuestions(): ExerciseQuestion[] {
     const priority = (type: ExerciseType): number => { const skill = this.storage.skillProgress()[type]; return skill.score - skill.recentResults.slice(-5).filter(result => !result).length * 3; };
-    const skills = [...EXERCISE_TYPES].sort((a, b) => priority(a) - priority(b) || Math.random() - .5).slice(0, 5);
+    const enabled = enabledExerciseTypes();
+    if (!enabled.length) throw new Error('At least one exercise must be enabled.');
+    const ranked = [...enabled].sort((a, b) => priority(a) - priority(b) || Math.random() - .5);
+    const skills = Array.from({ length: 5 }, (_, index) => ranked[index % ranked.length]);
     return skills.map(type => this.engine.generate(type, this.storage.skillProgress()[type].level, Math.random, type === 'progression' || type === 'progression-chords' ? { progressionLength: Math.random() < .5 ? 3 : 4 } : {}));
   }
   private recordSkillResult(results: SkillResults, type: ExerciseType, mistakes: number): SkillResults { const prior = results[type] ?? { questions: 0, firstAttemptCorrect: 0, incorrectAnswers: 0 }; return { ...results, [type]: { questions: prior.questions + 1, firstAttemptCorrect: prior.firstAttemptCorrect + Number(mistakes === 0), incorrectAnswers: prior.incorrectAnswers + mistakes } }; }
   private expectedAnswer(active: ActiveSession, question: ExerciseQuestion): string { const flow = exerciseDefinition(question.type).flow; if (flow === 'quality-then-root' && active.chordStage === 'root') return 'root' in question ? question.root : ''; if (flow === 'progression-sequence') return 'chordSymbols' in question ? question.chordSymbols[active.progressionChordIndex ?? 0] : ''; return question.correctAnswer; }
   private nextTransition(active: ActiveSession, question: ExerciseQuestion): PendingTransition { const flow = exerciseDefinition(question.type).flow; if (flow === 'quality-then-root' && active.chordStage === 'quality') return 'chord-root'; if (flow === 'progression-sequence' && 'chordSymbols' in question && (active.progressionChordIndex ?? 0) < question.chordSymbols.length - 1) return 'next-progression-chord'; return active.index === active.questions.length - 1 ? 'complete' : 'next-question'; }
-  private persist(active: ActiveSession): void { const exerciseBreakdown = active.questions.reduce<Partial<Record<ExerciseType, number>>>( (breakdown, question) => ({ ...breakdown, [question.type]: (breakdown[question.type] ?? 0) + 1 }), {}); const summary: SessionSummary = { id: crypto.randomUUID(), type: active.type, startedAt: new Date(active.startedAt).toISOString(), completedAt: new Date().toISOString(), durationMs: Date.now() - active.startedAt, questions: active.completedQuestions, correctAnswers: active.completedQuestions, incorrectAnswers: active.completedMistakes, firstAttemptCorrect: active.firstAttemptCorrect, difficulty: active.difficulty, exerciseBreakdown, skillResults: active.skillResults }; this.storage.addSession(summary); }
+  private persist(active: ActiveSession): void { const exerciseBreakdown = active.questions.slice(0, active.completedQuestions).reduce<Partial<Record<ExerciseType, number>>>((breakdown, question) => ({ ...breakdown, [question.type]: (breakdown[question.type] ?? 0) + 1 }), {}); const summary: SessionSummary = { id: crypto.randomUUID(), type: active.type, startedAt: new Date(active.startedAt).toISOString(), completedAt: new Date().toISOString(), durationMs: Date.now() - active.startedAt, questions: active.completedQuestions, correctAnswers: active.completedQuestions, incorrectAnswers: active.completedMistakes, firstAttemptCorrect: active.firstAttemptCorrect, difficulty: active.difficulty, exerciseBreakdown, skillResults: active.skillResults }; this.storage.addSession(summary); }
 }

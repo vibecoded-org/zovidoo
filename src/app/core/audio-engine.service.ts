@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import * as Tone from 'tone';
+import type * as Tone from 'tone';
 import { AudioPayload, Instrument } from './models';
 import { StorageService } from './storage.service';
 
@@ -12,13 +12,16 @@ export class AudioEngineService {
   private readonly storage = inject(StorageService);
 
   private synth?: Tone.PolySynth<Tone.Synth>;
+  private tone?: typeof Tone;
   private ready = false;
   private activeInstrument?: PlayableInstrument;
   private lastRandomInstrument?: PlayableInstrument;
   private readonly randomAssignments = new Map<string, PlayableInstrument>();
+  private readonly scheduledPlayback = new Set<ReturnType<typeof setTimeout>>();
 
   async initialize(): Promise<void> {
-    await Tone.start();
+    this.tone ??= await import('tone');
+    await this.tone.start();
     this.ready = true;
   }
   async play(payload: AudioPayload, playbackKey = ''): Promise<void> {
@@ -27,13 +30,12 @@ export class AudioEngineService {
     this.ensureSynth(this.storage.settings().instrument, playbackKey);
     const synth = this.synth;
     if (!synth) return;
-    const now = Tone.now() + 0.05;
-    if (payload.kind === 'progression') payload.notes.forEach((notes, index) => synth.triggerAttackRelease(notes.split(','), '1.05', now + index * 1.18));
-    else if (payload.kind === 'rhythm') (payload.rhythm ?? []).forEach(offset => synth.triggerAttackRelease(payload.notes[0], .08, now + offset));
-    else if (payload.kind === 'interval') { synth.triggerAttackRelease(payload.notes[0], '0.72', now); synth.triggerAttackRelease(payload.notes[1], '0.72', now + 0.85); }
-    else synth.triggerAttackRelease(payload.notes, payload.duration ?? 1.15, now);
+    if (payload.kind === 'progression') payload.notes.forEach((notes, index) => this.trigger(synth, notes.split(','), '1.05', index * 1.18));
+    else if (payload.kind === 'rhythm') (payload.rhythm ?? []).forEach(offset => this.trigger(synth, payload.notes[0], .08, offset));
+    else if (payload.kind === 'interval') { this.trigger(synth, payload.notes[0], .72); this.trigger(synth, payload.notes[1], .72, .85); }
+    else this.trigger(synth, payload.notes, payload.duration ?? 1.15);
   }
-  /** Immediately tears down the active voice graph so an answer never overlaps playback. */
+  /** Cancels pending notes and releases active voices without rebuilding the synth graph. */
   stop(): void { this.cancelPlayback(); }
   setVolume(value: number): void { if (this.synth) this.synth.volume.value = value; }
   setInstrument(instrument: Instrument): void {
@@ -64,6 +66,8 @@ export class AudioEngineService {
     return selected;
   }
   private createSynth(instrument: PlayableInstrument): Tone.PolySynth<Tone.Synth> {
+    const Tone = this.tone;
+    if (!Tone) throw new Error('Audio engine is not initialized.');
     switch (instrument) {
       case 'acoustic-guitar': return new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.003, decay: 0.34, sustain: 0.08, release: 0.72 } }).toDestination();
       case 'electric-piano': return new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.42, sustain: 0.18, release: 1.35 } }).toDestination();
@@ -75,8 +79,16 @@ export class AudioEngineService {
     }
   }
   private cancelPlayback(): void {
-    Tone.getTransport().cancel();
-    Tone.getTransport().stop();
+    this.scheduledPlayback.forEach(timer => clearTimeout(timer));
+    this.scheduledPlayback.clear();
+    this.tone?.getTransport().cancel();
+    this.tone?.getTransport().stop();
     this.synth?.releaseAll();
+  }
+  private trigger(synth: Tone.PolySynth<Tone.Synth>, notes: string | string[], duration: Tone.Unit.Time, offset = 0): void {
+    const play = (): void => { synth.triggerAttackRelease(notes, duration, (this.tone?.now() ?? 0) + .02); };
+    if (offset <= 0) { play(); return; }
+    const timer = setTimeout(() => { this.scheduledPlayback.delete(timer); play(); }, offset * 1_000);
+    this.scheduledPlayback.add(timer);
   }
 }

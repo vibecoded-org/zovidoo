@@ -21,7 +21,7 @@ export class ProgressService {
     const todaySessions = sessions.filter(s => dateKey(s.completedAt) === today);
     const todayQuestions = todaySessions.reduce((sum, s) => sum + s.questions, 0);
     const todayCorrect = todaySessions.reduce((sum, s) => sum + s.firstAttemptCorrect, 0);
-    const byType: Record<ExerciseType, number> = { note: 0, interval: 0, chord: 0, 'chord-symbol': 0, progression: 0, 'progression-chords': 0 };
+    const byType = EXERCISE_TYPES.reduce((result, type) => ({ ...result, [type]: 0 }), {} as Record<ExerciseType, number>);
     for (const type of EXERCISE_TYPES) byType[type] = skills[type].score;
     const since = (days: number): number => { const threshold = new Date(); threshold.setDate(threshold.getDate() - days + 1); return [...activeDays].filter(day => new Date(`${day}T12:00:00`) >= threshold).length; };
     return { totalSessions: sessions.length, totalQuestions, correct, incorrect, accuracy: totalQuestions ? Math.round(correct / totalQuestions * 100) : 0, totalMinutes: Math.round(sessions.reduce((sum, s) => sum + s.durationMs, 0) / 60000), todayQuestions, todayAccuracy: todayQuestions ? Math.round(todayCorrect / todayQuestions * 100) : 0, currentStreak: this.streak(activeDays), longestStreak: this.longest(activeDays), weeklyDays: since(7), monthlyDays: since(30), activeDays, byType, skills };

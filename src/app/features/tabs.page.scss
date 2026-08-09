@@ -1,6 +1,6 @@
 :host { display:block; position:absolute; inset:0; overflow:hidden; }
-ion-tabs { position:absolute; inset:0; height:100%; overflow:hidden; background:var(--ion-background-color); }
-ion-tab-bar { position:relative; z-index:10; flex:0 0 auto; }
+ion-tabs { position:absolute; inset:0; height:100%; overflow:hidden; background:var(--zovidoo-app-background); }
+ion-tab-bar { position:relative; z-index:10; flex:0 0 auto; --background:var(--zovidoo-app-background); background:var(--zovidoo-app-background); }
 
 /* A browser viewport has no app safe area; keep the navigation flush to its edge. */
 @media (display-mode: browser) {

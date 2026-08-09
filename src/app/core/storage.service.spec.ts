@@ -16,4 +16,24 @@ describe('StorageService migrations and validation', () => {
     expect(() => service.parseImport(JSON.stringify({ schemaVersion: 99, data: {} }))).toThrow();
     expect(service.sessions()).toEqual([]);
   });
+
+  it('preserves existing skill scores while adding new exercise skills', () => {
+    const service = new StorageService();
+    const data = service.parseImport(JSON.stringify({ schemaVersion: 2, data: { version: 2, settings: {}, sessions: [], skillProgress: { interval: { score: 74, level: 4, attempts: 10, recentResults: [true], updatedAt: new Date().toISOString() } } } }));
+    expect(data.version).toBe(3);
+    expect(data.skillProgress.interval.score).toBe(74);
+    expect(data.skillProgress.rhythm.score).toBe(50);
+  });
+
+  it('rejects oversized backup files before parsing them', () => {
+    const service = new StorageService();
+    expect(() => service.parseImport('x'.repeat(5 * 1024 * 1024 + 1))).toThrow();
+  });
+
+  it('restores a saved profile in a new service instance', () => {
+    const first = new StorageService();
+    first.saveProfile('Ada');
+    const reloaded = new StorageService();
+    expect(reloaded.profile()?.name).toBe('Ada');
+  });
 });

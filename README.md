@@ -15,6 +15,8 @@ Zovidoo is a mobile-first Ionic/Angular app for short, focused practice in note,
 
 Exercise generation is deterministic when supplied a random function and always produces intentional unique distractors. Sessions store only compact summaries; raw Tone nodes and audio are never persisted.
 
+Exercise behavior and musical pools are configured in `src/app/core/exercise-catalog.config.ts`. See [the exercise configuration guide](docs/exercise-configuration.md) to tune difficulty, choices, content pools or add a generator.
+
 ## Storage schema
 
 All data is stored under `zovidoo-ear-training` as:
@@ -47,4 +49,4 @@ For native shells, install the platform then sync the built `www` folder with Ca
 
 ## Known MVP boundaries
 
-Browser reminders only fire while Zovidoo remains open; background scheduling needs Web Push or a native notification plugin and is intentionally not presented as guaranteed. The current adaptive curriculum uses per-skill mastery. Inversions, harmonic intervals, MIDI, sample packs, accounts and sync remain future work.
+Browser reminders only fire while Zovidoo remains open; background scheduling needs Web Push or a native notification plugin and is intentionally not presented as guaranteed. The adaptive curriculum covers melodic and harmonic intervals, chord inversions, cadences and rhythm patterns through per-skill mastery. Sample packs, accounts and sync remain future work.

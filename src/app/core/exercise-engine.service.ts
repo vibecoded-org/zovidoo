@@ -2,23 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ChordQuestion, ChoiceQuestion, Difficulty, ExerciseQuestion, ExerciseType, PITCH_CLASSES, PitchClass, ProgressionChordQuestion } from './models';
 import { MusicTheoryService } from './music-theory.service';
 import { TranslationService } from './translation.service';
-
-const intervals = [{ key: 'minorThird', semitones: 3 }, { key: 'majorThird', semitones: 4 }, { key: 'perfectFourth', semitones: 5 }, { key: 'perfectFifth', semitones: 7 }, { key: 'octave', semitones: 12 }, { key: 'majorSecond', semitones: 2 }, { key: 'minorSixth', semitones: 8 }, { key: 'majorSixth', semitones: 9 }];
-const progressions = [['I', 'V', 'vi', 'IV'], ['I', 'vi', 'IV', 'V'], ['vi', 'IV', 'I', 'V'], ['I', 'IV', 'V', 'I'], ['ii', 'V7', 'I'], ['I', 'IV', 'V7'], ['vi', 'ii', 'V7'], ['I', 'vi', 'IV']];
-const keys = ['C', 'Bb', 'D', 'F', 'G', 'A', 'E'];
-const chordRoots = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-const cadences = [
-  { key: 'cadenceAuthentic', degrees: ['V7', 'I'] },
-  { key: 'cadencePlagal', degrees: ['IV', 'I'] },
-  { key: 'cadenceDeceptive', degrees: ['V', 'vi'] },
-  { key: 'cadenceHalf', degrees: ['ii', 'V'] },
-];
-const rhythms = [
-  { key: 'rhythmSteady', pattern: [0, .5, 1, 1.5] },
-  { key: 'rhythmSyncopated', pattern: [0, .75, 1, 1.75] },
-  { key: 'rhythmTriplet', pattern: [0, 1 / 3, 2 / 3, 1, 4 / 3, 5 / 3] },
-  { key: 'rhythmDotted', pattern: [0, .75, 1.5] },
-];
+import { EXERCISE_CONTENT, ExerciseDifficultyConfiguration, exerciseConfiguration } from './exercise-catalog.config';
 const pick = <T>(items: readonly T[], random: () => number): T => items[Math.floor(random() * items.length)];
 const choices = <T>(items: T[], count: number, random: () => number): T[] => [...items].sort(() => random() - .5).slice(0, count);
 const shuffle = <T>(items: T[], random: () => number): T[] => [...items].sort(() => random() - .5);
@@ -31,66 +15,72 @@ export class ExerciseEngineService {
   private readonly i18n = inject(TranslationService);
 
   generate(type: ExerciseType, difficulty: Difficulty = 1, random = Math.random, options: ExerciseGenerationOptions = {}): ExerciseQuestion {
-    switch (type) { case 'note': return this.note(random, difficulty); case 'interval': return this.interval(random, difficulty); case 'harmonic-interval': return this.harmonicInterval(random, difficulty); case 'chord': return this.chordQuality(random); case 'inversion': return this.inversion(random); case 'chord-symbol': return this.chordSymbol(random, difficulty); case 'progression-chords': return this.progressionChords(random, difficulty, options); case 'progression': return this.progression(random, difficulty, options); case 'cadence': return this.cadence(random, difficulty); case 'rhythm': return this.rhythm(random, difficulty); }
+    const configuration = exerciseConfiguration(type); const profile = configuration.levels[difficulty];
+    switch (configuration.generator) { case 'note': return this.note(random, profile); case 'interval': return this.interval(random, profile); case 'harmonic-interval': return this.harmonicInterval(random, profile); case 'chord': return this.chordQuality(random, profile); case 'inversion': return this.inversion(random, profile); case 'chord-symbol': return this.chordSymbol(random, profile); case 'progression-chords': return this.progressionChords(random, profile, options); case 'progression': return this.progression(random, profile, options); case 'cadence': return this.cadence(random, profile); case 'rhythm': return this.rhythm(random, profile); }
   }
-  private note(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const pool = difficulty === 1 ? [0, 2, 4, 5, 7, 9, 11] : PITCH_CLASSES.map((_, index) => index); const pitch = pick(pool, random); const octave = 3 + Math.floor(random() * 3); const answer = PITCH_CLASSES[pitch];
+  private note(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const pool = profile.contentScope === 'core' ? EXERCISE_CONTENT.noteCorePitches : PITCH_CLASSES.map((_, index) => index); const pitch = pick(pool, random); const octave = 3 + Math.floor(random() * 3); const answer = PITCH_CLASSES[pitch];
     return { id: crypto.randomUUID(), type: 'note', prompt: this.t('notePrompt'), correctAnswer: answer, options: PITCH_CLASSES, audio: { kind: 'note', notes: [this.theory.noteAt(pitch, octave)] }, explanation: this.t('thatWas', { answer }) };
   }
-  private interval(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const pool = difficulty <= 1 ? intervals.slice(0, 5) : intervals; const target = pick(pool, random); const label = this.t(target.key); const labels = pool.map(item => this.t(item.key)); const start = 48 + Math.floor(random() * 12); const options = shuffle([label, ...this.intervalDistractors(label, labels, difficulty)], random);
+  private interval(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const pool = profile.contentScope === 'core' ? EXERCISE_CONTENT.intervals.slice(0, 5) : EXERCISE_CONTENT.intervals; const target = pick(pool, random); const label = this.t(target.key); const labels = pool.map(item => this.t(item.key)); const start = 48 + Math.floor(random() * 12); const options = shuffle([label, ...this.intervalDistractors(label, labels, profile)], random);
     return { id: crypto.randomUUID(), type: 'interval', prompt: this.t('intervalPrompt'), correctAnswer: label, options, audio: { kind: 'interval', notes: [this.theory.noteAt(start % 12, Math.floor(start / 12)), this.theory.noteAt((start + target.semitones) % 12, Math.floor((start + target.semitones) / 12))] }, explanation: this.t('intervalExplanation', { interval: label, semitones: target.semitones }) };
   }
-  private harmonicInterval(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const pool = difficulty <= 1 ? intervals.slice(0, 5) : intervals; const target = pick(pool, random); const label = this.t(target.key); const labels = pool.map(item => this.t(item.key)); const start = 48 + Math.floor(random() * 12); const options = shuffle([label, ...this.intervalDistractors(label, labels, difficulty)], random);
+  private harmonicInterval(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const pool = profile.contentScope === 'core' ? EXERCISE_CONTENT.intervals.slice(0, 5) : EXERCISE_CONTENT.intervals; const target = pick(pool, random); const label = this.t(target.key); const labels = pool.map(item => this.t(item.key)); const start = 48 + Math.floor(random() * 12); const options = shuffle([label, ...this.intervalDistractors(label, labels, profile)], random);
     return { id: crypto.randomUUID(), type: 'harmonic-interval', prompt: this.t('harmonicIntervalPrompt'), correctAnswer: label, options, audio: { kind: 'chord', notes: [this.theory.noteAt(start % 12, Math.floor(start / 12)), this.theory.noteAt((start + target.semitones) % 12, Math.floor((start + target.semitones) / 12))] }, explanation: this.t('thatWas', { answer: label }) };
   }
-  private chordQuality(random: () => number): ChordQuestion {
+  private chordQuality(random: () => number, profile: ExerciseDifficultyConfiguration): ChordQuestion {
     const qualities: ChordQuestion['quality'][] = ['Major', 'Minor', 'Diminished', 'Augmented']; const quality = pick(qualities, random); const root = pick(PITCH_CLASSES, random);
     const displayedQuality = this.quality(quality);
-    return { id: crypto.randomUUID(), type: 'chord', prompt: this.t('chordQualityPrompt'), correctAnswer: displayedQuality, options: shuffle(qualities.map(item => this.quality(item)), random), root, quality, audio: { kind: 'chord', notes: this.theory.chordNotes(root, quality) }, explanation: this.t('chordExplanation', { root, quality: displayedQuality.toLowerCase() }) };
+    return { id: crypto.randomUUID(), type: 'chord', prompt: this.t('chordQualityPrompt'), correctAnswer: displayedQuality, options: this.optionsWithCorrect(displayedQuality, qualities.map(item => this.quality(item)), profile, random), root, quality, audio: { kind: 'chord', notes: this.theory.chordNotes(root, quality) }, explanation: this.t('chordExplanation', { root, quality: displayedQuality.toLowerCase() }) };
   }
-  private inversion(random: () => number): ChoiceQuestion {
-    const root = pick(PITCH_CLASSES, random); const quality = pick(['Major', 'Minor'] as const, random); const index = Math.floor(random() * 3); const labels = ['rootPosition', 'firstInversion', 'secondInversion']; const correct = this.t(labels[index]);
-    return { id: crypto.randomUUID(), type: 'inversion', prompt: this.t('inversionPrompt'), correctAnswer: correct, options: shuffle(labels.map(label => this.t(label)), random), audio: { kind: 'chord', notes: this.theory.invert(this.theory.chordNotes(root, quality), index) }, explanation: this.t('thatWas', { answer: correct }) };
+  private inversion(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const root = pick(PITCH_CLASSES, random); const quality = pick(EXERCISE_CONTENT.inversionQualities, random); const index = Math.floor(random() * 4); const labels = ['rootPosition', 'firstInversion', 'secondInversion', 'thirdInversion']; const correct = this.t(labels[index]);
+    return { id: crypto.randomUUID(), type: 'inversion', prompt: this.t('inversionPrompt'), correctAnswer: correct, options: this.optionsWithCorrect(correct, labels.map(label => this.t(label)), profile, random), audio: { kind: 'chord', notes: this.theory.invert(this.theory.chordSymbolNotes(`${root.split('/')[0]}${quality}`), index) }, explanation: this.t('thatWas', { answer: correct }) };
   }
-  private chordSymbol(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const qualities = ['', 'm', '7']; const correct = symbol(pick(chordRoots, random), pick(qualities, random));
-    return { id: crypto.randomUUID(), type: 'chord-symbol', prompt: this.t('chordSymbolPrompt'), correctAnswer: correct, options: shuffle([correct, ...this.chordSymbolDistractors(correct, difficulty)], random), audio: { kind: 'chord', notes: this.theory.chordSymbolNotes(correct) }, explanation: this.t('thatWas', { answer: correct }) };
+  private chordSymbol(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const qualities = ['', 'm', '7']; const correct = symbol(pick(EXERCISE_CONTENT.chordRoots, random), pick(qualities, random));
+    return { id: crypto.randomUUID(), type: 'chord-symbol', prompt: this.t('chordSymbolPrompt'), correctAnswer: correct, options: shuffle([correct, ...this.chordSymbolDistractors(correct, profile)], random), audio: { kind: 'chord', notes: this.theory.chordSymbolNotes(correct) }, explanation: this.t('thatWas', { answer: correct }) };
   }
-  private progression(random: () => number, difficulty: Difficulty, options: ExerciseGenerationOptions): ChoiceQuestion {
-    const key = pick(keys, random); const matching = progressions.filter(item => item.length === (options.progressionLength ?? pick([3, 4] as const, random))); const target = pick(matching, random); const chordSymbols = this.theory.progressionSymbols(key, target); const correct = chordSymbols.join(' – ');
-    const optionsList = shuffle([correct, ...this.progressionDistractors(target, matching, key, difficulty)], random);
+  private progression(random: () => number, profile: ExerciseDifficultyConfiguration, options: ExerciseGenerationOptions): ChoiceQuestion {
+    const key = pick(EXERCISE_CONTENT.keys, random); const matching = EXERCISE_CONTENT.progressions.filter(item => item.length === (options.progressionLength ?? this.progressionLength(profile, random))); const target = pick(matching, random); const chordSymbols = this.theory.progressionSymbols(key, target); const correct = chordSymbols.join(' – ');
+    const optionsList = shuffle([correct, ...this.progressionDistractors(target, matching, key, profile)], random);
     return { id: crypto.randomUUID(), type: 'progression', prompt: this.t('progressionPrompt'), correctAnswer: correct, options: optionsList, audio: { kind: 'progression', notes: chordSymbols.map(item => this.theory.chordSymbolNotes(item).join(',')) }, explanation: this.t('progressionExplanation', { progression: chordSymbols.join(' → ') }) };
   }
-  private progressionChords(random: () => number, difficulty: Difficulty, config: ExerciseGenerationOptions): ProgressionChordQuestion {
-    const key = pick(keys, random); const matching = progressions.filter(item => item.length === (config.progressionLength ?? pick([3, 4] as const, random))); const chordSymbols = this.theory.progressionSymbols(key, pick(matching, random)); const correct = chordSymbols[0];
-    const optionsByChord = chordSymbols.map(chord => shuffle([chord, ...this.chordSymbolDistractors(chord, difficulty)], random));
+  private progressionChords(random: () => number, profile: ExerciseDifficultyConfiguration, config: ExerciseGenerationOptions): ProgressionChordQuestion {
+    const key = pick(EXERCISE_CONTENT.keys, random); const matching = EXERCISE_CONTENT.progressions.filter(item => item.length === (config.progressionLength ?? this.progressionLength(profile, random))); const chordSymbols = this.theory.progressionSymbols(key, pick(matching, random)); const correct = chordSymbols[0];
+    const optionsByChord = chordSymbols.map(chord => shuffle([chord, ...this.chordSymbolDistractors(chord, profile)], random));
     return { id: crypto.randomUUID(), type: 'progression-chords', prompt: this.t('progressionChordsPrompt'), correctAnswer: correct, options: optionsByChord[0], chordSymbols, optionsByChord, audio: { kind: 'progression', notes: chordSymbols.map(item => this.theory.chordSymbolNotes(item).join(',')) }, explanation: this.t('progressionExplanation', { progression: chordSymbols.join(' → ') }) };
   }
-  private cadence(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const target = pick(cadences, random); const key = pick(keys, random); const options = difficulty >= 3 ? cadences : shuffle(cadences, random);
+  private cadence(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const target = pick(EXERCISE_CONTENT.cadences, random); const key = pick(EXERCISE_CONTENT.keys, random); const options = this.adaptiveOptions(target, EXERCISE_CONTENT.cadences, candidate => this.cadenceDistance(target.degrees, candidate.degrees), profile, random);
     return { id: crypto.randomUUID(), type: 'cadence', prompt: this.t('cadencePrompt'), correctAnswer: this.t(target.key), options: shuffle(options.map(item => this.t(item.key)), random), audio: { kind: 'progression', notes: this.theory.progressionSymbols(key, target.degrees).map(item => this.theory.chordSymbolNotes(item).join(',')) }, explanation: this.t('thatWas', { answer: this.t(target.key) }) };
   }
-  private rhythm(random: () => number, difficulty: Difficulty): ChoiceQuestion {
-    const target = pick(rhythms, random); const candidates = difficulty >= 3 ? rhythms : shuffle(rhythms, random);
+  private rhythm(random: () => number, profile: ExerciseDifficultyConfiguration): ChoiceQuestion {
+    const target = pick(EXERCISE_CONTENT.rhythms, random); const candidates = this.adaptiveOptions(target, EXERCISE_CONTENT.rhythms, candidate => this.rhythmDistance(target.pattern, candidate.pattern), profile, random);
     return { id: crypto.randomUUID(), type: 'rhythm', prompt: this.t('rhythmPrompt'), correctAnswer: this.t(target.key), options: shuffle(candidates.map(item => this.t(item.key)), random), audio: { kind: 'rhythm', notes: ['C5'], rhythm: target.pattern }, explanation: this.t('thatWas', { answer: this.t(target.key) }) };
   }
-  private intervalDistractors(answer: string, labels: string[], difficulty: Difficulty): string[] {
+  private intervalDistractors(answer: string, labels: string[], profile: ExerciseDifficultyConfiguration): string[] {
     const index = labels.indexOf(answer); const ranked = labels.filter(label => label !== answer).sort((a, b) => Math.abs(labels.indexOf(a) - index) - Math.abs(labels.indexOf(b) - index));
-    return difficulty >= 3 ? ranked.slice(0, 3) : ranked.slice(-3);
+    return profile.distractorSimilarity === 'similar' ? ranked.slice(0, profile.choiceCount - 1) : ranked.slice(-(profile.choiceCount - 1));
   }
-  private chordSymbolDistractors(answer: string, difficulty: Difficulty): string[] {
+  private chordSymbolDistractors(answer: string, profile: ExerciseDifficultyConfiguration): string[] {
     const match = /^([A-G](?:b|#)?)(m|7)?$/.exec(answer); if (!match) return [];
-    const root = match[1]; const quality = match[2] ?? ''; const index = chordRoots.indexOf(root); const offsets = difficulty >= 3 ? [1, -1, 2] : [4, -4, 6];
-    return offsets.map(offset => symbol(chordRoots[(index + offset + chordRoots.length) % chordRoots.length], quality));
+    const root = match[1]; const quality = match[2] ?? ''; const index = EXERCISE_CONTENT.chordRoots.indexOf(root); const offsets = profile.distractorSimilarity === 'similar' ? [1, -1, 2, -2] : [4, -4, 6, -6];
+    return offsets.slice(0, profile.choiceCount - 1).map(offset => symbol(EXERCISE_CONTENT.chordRoots[(index + offset + EXERCISE_CONTENT.chordRoots.length) % EXERCISE_CONTENT.chordRoots.length], quality));
   }
-  private progressionDistractors(target: string[], pool: string[][], key: string, difficulty: Difficulty): string[] {
+  private progressionDistractors(target: string[], pool: string[][], key: string, profile: ExerciseDifficultyConfiguration): string[] {
     const differences = (candidate: string[]): number => candidate.reduce((count, degree, index) => count + Number(degree !== target[index]), 0);
     const ranked = pool.filter(candidate => candidate !== target).sort((a, b) => differences(a) - differences(b));
-    const selected = difficulty >= 3 ? ranked.slice(0, 3) : ranked.slice(-3);
+    const selected = profile.distractorSimilarity === 'similar' ? ranked.slice(0, profile.choiceCount - 1) : ranked.slice(-(profile.choiceCount - 1));
     return selected.map(item => this.theory.progressionSymbols(key, item).join(' – '));
   }
+  private adaptiveOptions<T>(target: T, pool: readonly T[], distance: (candidate: T) => number, profile: ExerciseDifficultyConfiguration, random: () => number): T[] { const ranked = pool.filter(candidate => candidate !== target).sort((a, b) => distance(a) - distance(b)); const distractors = profile.distractorSimilarity === 'similar' ? ranked.slice(0, profile.choiceCount - 1) : ranked.slice(-(profile.choiceCount - 1)); return shuffle([target, ...distractors], random); }
+  private optionsWithCorrect<T>(correct: T, candidates: readonly T[], profile: ExerciseDifficultyConfiguration, random: () => number): T[] { const distractors = shuffle(candidates.filter(candidate => candidate !== correct), random).slice(0, profile.choiceCount - 1); return shuffle([correct, ...distractors], random); }
+  private cadenceDistance(target: string[], candidate: string[]): number { return Math.abs(target.length - candidate.length) + target.reduce((distance, degree, index) => distance + Number(degree !== candidate[index]), 0); }
+  private rhythmDistance(target: number[], candidate: number[]): number { const shared = Math.min(target.length, candidate.length); const timing = Array.from({ length: shared }, (_, index) => Math.abs(target[index] - candidate[index])).reduce((sum, value) => sum + value, 0); return Math.abs(target.length - candidate.length) + timing; }
+  private progressionLength(profile: ExerciseDifficultyConfiguration, random: () => number): 3 | 4 { return profile.progressionLength === 'mixed' || !profile.progressionLength ? pick([3, 4] as const, random) : profile.progressionLength; }
   private t(key: string, params: Record<string, string | number> = {}): string { return this.i18n?.t(key, params) ?? ({ minorThird: 'Minor 3rd', majorThird: 'Major 3rd', perfectFourth: 'Perfect 4th', perfectFifth: 'Perfect 5th', octave: 'Octave', majorSecond: 'Major 2nd', minorSixth: 'Minor 6th', majorSixth: 'Major 6th', notePrompt: 'Which note did you hear?', intervalPrompt: 'Which interval did you hear?', chordQualityPrompt: 'What chord quality did you hear?', chordSymbolPrompt: 'Which chord did you hear?', progressionPrompt: 'Which chord progression did you hear?', progressionChordsPrompt: 'Identify each chord in the progression.', major: 'Major', minor: 'Minor', diminished: 'Diminished', augmented: 'Augmented' })[key] ?? key; }
   private quality(quality: ChordQuestion['quality']): string { return this.t(({ Major: 'major', Minor: 'minor', Diminished: 'diminished', Augmented: 'augmented' })[quality]); }
 }
